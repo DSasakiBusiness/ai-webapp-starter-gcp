@@ -1,0 +1,38 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["apps/*/src/main.ts", "apps/*/src/app/page.tsx", "apps/*/src/app/layout.tsx"],
+      "project": ["apps/**/*.ts", "apps/**/*.tsx", "packages/**/*.ts"]
+    },
+    "apps/api": {
+      "entry": ["src/main.ts"],
+      "project": ["src/**/*.ts"],
+      "ignore": ["**/*.spec.ts"]
+    },
+    "apps/web": {
+      "entry": ["src/app/**/*.tsx", "src/app/**/*.ts"],
+      "project": ["src/**/*.ts", "src/**/*.tsx"]
+    },
+    "packages/shared": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts"]
+    }
+  },
+  "ignore": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "tests/**",
+    "prisma/**",
+    "scripts/**",
+    "infra/**",
+    ".claude/**"
+  ],
+  "ignoreDependencies": [
+    "@nestjs/schematics",
+    "source-map-support",
+    "reflect-metadata",
+    "ts-node",
+    "ts-node-dev"
+  ]
+}

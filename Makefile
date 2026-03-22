@@ -5,9 +5,10 @@
 
 .PHONY: help setup up down restart logs build clean \
         db-migrate db-migrate-deploy db-generate db-seed db-studio db-reset \
-        test test-unit test-integration test-e2e \
-        lint format doctor \
-        build-api-prod build-web-prod
+        test test-unit test-integration test-e2e test-cov \
+        lint format format-check spell knip circular depcheck ncu sort-pkg quality \
+        doctor ps \
+        build-api-prod build-web-prod build-all-prod
 
 # --- デフォルト ---
 help: ## このヘルプを表示
@@ -125,6 +126,31 @@ format: ## Prettier でフォーマット
 format-check: ## Prettier のフォーマットチェック（CI 用）
 	npx prettier --check "**/*.{ts,tsx,js,jsx,json,md,yml,yaml}"
 
+spell: ## スペルチェック（cspell）
+	npx cspell "**/*.{ts,tsx,js,jsx,md}"
+
+knip: ## 未使用コード検出（knip）
+	npx knip
+
+circular: ## 循環依存検出（madge）
+	npx madge --circular --extensions ts,tsx apps/ packages/
+
+depcheck: ## 未使用 dependencies 検出
+	npx depcheck apps/api --ignores='@nestjs/schematics,source-map-support,reflect-metadata,ts-node,ts-node-dev,@typescript-eslint/*' || true
+	npx depcheck apps/web --ignores='eslint-config-next' || true
+
+ncu: ## 依存パッケージ更新チェック
+	npx npm-check-updates --deep
+
+sort-pkg: ## package.json キーソート
+	npx sort-package-json package.json apps/*/package.json packages/*/package.json
+
+quality: ## 全品質チェック一括実行（format + spell + knip + circular）
+	$(MAKE) format-check
+	$(MAKE) spell
+	$(MAKE) knip
+	$(MAKE) circular
+
 # =============================================================================
 # 本番ビルド
 # =============================================================================
@@ -140,3 +166,4 @@ build-web-prod: ## Web 本番イメージビルド
 build-all-prod: ## 全本番イメージビルド
 	$(MAKE) build-api-prod
 	$(MAKE) build-web-prod
+

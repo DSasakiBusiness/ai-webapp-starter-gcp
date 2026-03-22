@@ -1,0 +1,12 @@
+{
+  "fileExtensions": ["ts", "tsx", "js", "jsx"],
+  "excludeRegExp": [
+    "node_modules",
+    "dist",
+    "\\.next",
+    "coverage",
+    "\\.spec\\.ts$",
+    "\\.test\\.ts$"
+  ],
+  "tsConfig": "./tsconfig.base.json"
+}
