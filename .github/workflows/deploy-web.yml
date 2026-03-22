@@ -1,0 +1,57 @@
+name: Deploy Web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'packages/shared/**'
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: asia-northeast1
+  SERVICE_NAME: aiwebapp-web
+  REPO: app-images
+
+jobs:
+  deploy:
+    name: Deploy Web to Cloud Run
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build and Push
+        run: |
+          IMAGE=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/web:${{ github.sha }}
+          docker build -f apps/web/Dockerfile \
+            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.API_URL }} \
+            -t $IMAGE .
+          docker push $IMAGE
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/web:${{ github.sha }}
+          flags: |
+            --allow-unauthenticated
+            --set-env-vars=NEXT_PUBLIC_API_URL=${{ secrets.API_URL }},NEXTAUTH_URL=${{ secrets.WEB_URL }}
+            --set-secrets=NEXTAUTH_SECRET=NEXTAUTH_SECRET:latest
+            --cpu-boost
+            --memory=1Gi

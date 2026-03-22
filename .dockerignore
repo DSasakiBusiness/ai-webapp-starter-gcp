@@ -1,0 +1,47 @@
+# Node
+node_modules
+.npm-cache
+
+# Build artifacts
+.next
+out
+dist
+build
+
+# Environment (prevent local .env from overriding production secrets)
+**/.env
+**/.env.*
+!**/.env.example
+
+# Git and IDE
+.git
+.gitignore
+.DS_Store
+.vscode
+.idea
+
+# Claude agent config (not needed in container)
+.claude
+
+# Testing
+coverage
+test-results
+playwright-report
+blob-report
+tests
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Infrastructure
+infra
+.github
+
+# GCP keys
+gcp-sa-key.json
+gcp-key.json
+
+# Turborepo
+.turbo
