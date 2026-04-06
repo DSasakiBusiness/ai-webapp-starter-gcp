@@ -3,6 +3,8 @@
 AI 特化 Web サービスを **最速で本番投入する** ための開発スターターキット。  
 Next.js + NestJS + Prisma + LLM + Docker + GCP を基盤とし、Claude Code のエージェント・スキルによるAI駆動開発をフル活用する。
 
+*[日本語](README.md) | [English](README.en.md)*
+
 ---
 
 ## ✨ このスターターで得られるもの
@@ -543,4 +545,4 @@ make build-api-prod / build-web-prod / build-all-prod
 
 ## 📄 ライセンス
 
-MIT
+[MIT](LICENSE)
